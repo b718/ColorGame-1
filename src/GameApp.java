@@ -18,19 +18,22 @@ public class GameApp implements ActionListener {
     private JFrame window;
     private JPanel gamePanel;
     private JPanel displayPanel;
+    private JPanel displayPanel2;
     private JPanel displayPanelHelper;
     // We need this because putting it directly onto the frame causes errors
 
     private ArrayList<Color> correctList;
     private ArrayList<Color> ourList;
     private int colorHolderSize;
+    private boolean c;
+    private ArrayList<Color> allColors;
 
     private JButton redButton;
     private JButton blueButton;
     private JButton greenButton;
     private JButton yellowButton;
     private JButton confirmButton;
-
+    private JButton nextButton;
 
     public GameApp() {
         window = new JFrame("Color Game");
@@ -55,11 +58,18 @@ public class GameApp implements ActionListener {
         gamePanel.setBorder(BorderFactory.createLineBorder(Color.blue));
         gamePanel.setLayout(new GridLayout(1, 5));
 
+        displayPanelHelper = new JPanel();
+        displayPanelHelper.setBackground(Color.black);
+        displayPanelHelper.setBounds(105, 420, 400, 60);
+        displayPanelHelper.setBorder(BorderFactory.createLineBorder(Color.blue));
+        displayPanelHelper.setLayout(new GridLayout(1, 1));
+
         redButton = buttonHelper(RED, "Red");
         blueButton = buttonHelper(BLUE, "Blue");
         yellowButton = buttonHelper(YELLOW, "Yellow");
         greenButton = buttonHelper(GREEN, "Green");
         confirmButton = buttonHelper(Color.lightGray, "Confirm");
+        nextButton = buttonHelper(Color.black, "Next");
 
         gamePanel.add(redButton);
         gamePanel.add(blueButton);
@@ -67,7 +77,11 @@ public class GameApp implements ActionListener {
         gamePanel.add(greenButton);
         gamePanel.add(confirmButton);
 
+        displayPanelHelper.add(nextButton);
+
         window.add(gamePanel);
+        window.add(displayPanelHelper);
+        displayPanelHelper.setVisible(false);
         window.setVisible(true);
         ((JComponent) window.getContentPane()).revalidate();
         window.repaint();
@@ -86,6 +100,14 @@ public class GameApp implements ActionListener {
     // This displays the randomly chosen colors we get from our random choosing concept!
     public void displayerMethod() {
         // We take our parameter C and display that bih!
+        //window.setVisible(false);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("reached here");
         displayPanel = new JPanel();
         displayPanel.setBounds(105, 55, 400, 300);
         displayPanel.setBorder(BorderFactory.createLineBorder(Color.blue));
@@ -96,11 +118,10 @@ public class GameApp implements ActionListener {
             displayPanel.setBackground(correctList.get(i));
             window.add(displayPanel);
             window.setVisible(true);
-            ((JComponent) window.getContentPane()).revalidate();
+            window.revalidate();
             window.repaint();
-
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
                 // This adds a 1-second delay
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -124,14 +145,14 @@ public class GameApp implements ActionListener {
         ((JComponent) window.getContentPane()).revalidate();
         window.repaint();
 
-    }*/
+}*/
 
     // This checks if the colors we have given is equal to the correct
     // colors that are randomly chosen!
     public void checkingMethod() {
         // We have to use ArrayLists here because order actually matters!
         // We would have to check each index, and we may even have to do hashCode!
-        boolean c = true;
+        c = true;
 
         for (int i = 0; i < correctList.size(); i++) {
             if (!correctList.get(i).equals(ourList.get(i))) {
@@ -143,21 +164,23 @@ public class GameApp implements ActionListener {
         }
 
         if (c) {
+            System.out.println("correct");
             ourList = new ArrayList<>();
             colorHolderSize++;
-            randomizer();
-            displayerMethod();
-            System.out.println("correct");
+            return;
         }
     }
 
     public void randomizer() {
         correctList = new ArrayList<>();
         for (int i = 0; i < colorHolderSize; i++) {
-            ArrayList<Color> allColors = randomizerHelper();
+            allColors = randomizerHelper();
             Random rand = new Random();
-            correctList.add(allColors.get(rand.nextInt(allColors.size())));
+            Color x = allColors.get(rand.nextInt(allColors.size()));
+            System.out.println(x);
+            correctList.add(x);
         }
+        displayerMethod();
     }
 
     public ArrayList<Color> randomizerHelper() {
@@ -173,15 +196,30 @@ public class GameApp implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == redButton) {
             ourList.add(RED);
+            System.out.println("Added red!");
+
         } else if (e.getSource() == blueButton) {
             ourList.add(BLUE);
+            System.out.println("Added blue!");
+
         } else if (e.getSource() == greenButton) {
             ourList.add(GREEN);
+            System.out.println("Added green!");
+
         } else if (e.getSource() == yellowButton) {
             ourList.add(YELLOW);
-        } else if (e.getSource() == confirmButton) {
-            checkingMethod();
+            System.out.println("Added yellow!");
 
+        } else if (e.getSource() == confirmButton) {
+            displayPanel.setVisible(false);
+            checkingMethod();
+            randomizer();
+
+        }else if (e.getSource() == nextButton){
+            randomizer();
+            gamePanel.setVisible(true);
         }
+
+        System.out.println("reached here in actionPerformed!");
     }
 }
