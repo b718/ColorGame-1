@@ -12,6 +12,8 @@ public class Main {
                     ex.printStackTrace();
                 }
                 new GameApp();
+
+                // Testing if commit works
             }
 
         });
